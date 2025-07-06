@@ -4,6 +4,9 @@ import { admin, adminDB } from "@/lib/firebase_admin";
 import Link from "next/link";
 
 const fetchCheckout = async (checkoutId) => {
+  if (!adminDB) {
+    throw new Error("Firebase admin not initialized");
+  }
   const list = await adminDB
     .collectionGroup("checkout_sessions_cod")
     .where("id", "==", checkoutId)
@@ -15,6 +18,9 @@ const fetchCheckout = async (checkoutId) => {
 };
 
 const processOrder = async ({ checkout }) => {
+  if (!adminDB) {
+    throw new Error("Firebase admin not initialized");
+  }
   const order = await adminDB.doc(`orders/${checkout?.id}`).get();
   if (order.exists) {
     return false;

@@ -5,6 +5,9 @@ import Link from "next/link";
 import SuccessMessage from "./components/SuccessMessage";
 
 const fetchCheckout = async (checkoutId) => {
+  if (!adminDB) {
+    throw new Error("Firebase admin not initialized");
+  }
   const list = await adminDB
     .collectionGroup("checkout_sessions")
     .where("id", "==", checkoutId)
@@ -16,6 +19,9 @@ const fetchCheckout = async (checkoutId) => {
 };
 
 const fetchPayment = async (checkoutId) => {
+  if (!adminDB) {
+    throw new Error("Firebase admin not initialized");
+  }
   const list = await adminDB
     .collectionGroup("payments")
     .where("metadata.checkoutId", "==", checkoutId)
@@ -28,6 +34,9 @@ const fetchPayment = async (checkoutId) => {
 };
 
 const processOrder = async ({ payment, checkout }) => {
+  if (!adminDB) {
+    throw new Error("Firebase admin not initialized");
+  }
   const order = await adminDB.doc(`orders/${payment?.id}`).get();
   if (order.exists) {
     return false;

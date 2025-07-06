@@ -14,10 +14,35 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-export const analytics = isSupported().then((yes) =>
-  yes ? getAnalytics(app) : null
-);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-export const storage = getStorage(app);
+// Check if Firebase config is properly set
+const isFirebaseConfigured = firebaseConfig.apiKey && 
+  firebaseConfig.authDomain && 
+  firebaseConfig.projectId && 
+  firebaseConfig.storageBucket && 
+  firebaseConfig.messagingSenderId && 
+  firebaseConfig.appId;
+
+// Initialize Firebase only if configuration is valid
+let app = null;
+let analytics = null;
+let db = null;
+let auth = null;
+let storage = null;
+
+if (isFirebaseConfigured) {
+  try {
+    app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+    analytics = isSupported().then((yes) =>
+      yes ? getAnalytics(app) : null
+    );
+    db = getFirestore(app);
+    auth = getAuth(app);
+    storage = getStorage(app);
+  } catch (error) {
+    console.error("Firebase initialization failed:", error);
+  }
+} else {
+  console.warn("Firebase configuration is incomplete. Please set all required environment variables.");
+}
+
+export { analytics, db, auth, storage };
